@@ -1,0 +1,90 @@
+@baseUrl = http://localhost:3000
+
+###
+# RECADOS
+# Retorna todos os recados cadastrados
+GET {{baseUrl}}/pessoas
+
+###
+
+# Retorna apenas um recado com base no ID
+GET {{baseUrl}}/pessoas/4
+
+###
+
+# Criar uma pessoa
+POST {{baseUrl}}/pessoas/
+Content-Type: application/json
+
+{
+    "email": "christian@email.com",
+    "password": "123456",
+    "nome": "Christian"
+}
+
+###
+
+# Edita uma pessoa
+PATCH {{baseUrl}}/pessoas/4/
+Content-Type: application/json
+
+{
+    "password": "123456",
+    "nome": "Chriss"
+}
+
+###
+
+# Deleta uma pessoa
+DELETE {{baseUrl}}/pessoas/4
+
+###
+
+# RECADOS
+# Retorna todos os recados cadastrados
+GET {{baseUrl}}/recados/
+?limit=10
+&offset=0
+
+###
+
+# Retorna apenas um recado com base no ID
+GET {{baseUrl}}/recados/1
+
+###
+
+# Criar um recado
+POST {{baseUrl}}/recados/
+Content-Type: application/json
+
+{
+    "texto": "Esse é o novo recado",
+    "deId": 5,
+    "paraId": 7
+}
+
+###
+
+# Edita um recado
+PATCH {{baseUrl}}/recados/5/
+Content-Type: application/json
+
+{
+    "texto": "Esse é o recado editado",
+    "lido": true
+}
+
+###
+
+# Deleta um Recado
+DELETE {{baseUrl}}/recados/1
+
+###
+# Faz o login
+POST {{baseUrl}}/auth/
+Content-Type: application/json
+
+{
+    "email": "christian@email.com",
+    "password": "12345"
+}
