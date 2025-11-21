@@ -10,11 +10,15 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { RecadosService } from './recados.service';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { AuthTokenGuard } from 'src/auth/guards/auth-token.guard';
+import { TokenPayloadParam } from 'src/auth/params/token-payload.param';
+import { TokenPayloadDto } from 'src/auth/dto/token-payload';
 
 // CRUD
 // Create -> POST -> Criar um recado
@@ -48,23 +52,33 @@ export class RecadosController {
   }
 
   // Cria um recado
+  @UseGuards(AuthTokenGuard)
   @Post()
-  create(@Body() CreateRecadoDto: CreateRecadoDto) {
-    return this.recadosService.create(CreateRecadoDto);
+  create(
+    @Body() CreateRecadoDto: CreateRecadoDto,
+    @TokenPayloadParam() tokenPayload: TokenPayloadDto,
+  ) {
+    return this.recadosService.create(CreateRecadoDto, tokenPayload);
   }
 
   // Edita um recado com base no id
+  @UseGuards(AuthTokenGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateRecadoDto: UpdateRecadoDto,
+    @TokenPayloadParam() tokenPayload: TokenPayloadDto,
   ) {
-    return this.recadosService.update(id, updateRecadoDto);
+    return this.recadosService.update(id, updateRecadoDto, tokenPayload);
   }
 
   // Deleta um recado
+  @UseGuards(AuthTokenGuard)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.recadosService.remove(id);
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @TokenPayloadParam() tokenPayload: TokenPayloadDto,
+  ) {
+    return this.recadosService.remove(id, tokenPayload);
   }
 }

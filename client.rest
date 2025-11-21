@@ -1,8 +1,9 @@
 @baseUrl = http://localhost:3000
 @authToken = {{authenticate.response.body.accessToken}}
+@refreshToken = {{authenticate.response.body.refreshToken}}
 ###
-# RECADOS
-# Retorna todos os recados cadastrados
+# PESSOAS
+# Retorna todas as pessoas cadastradas
 GET {{baseUrl}}/pessoas
 ?limit=10
 &offset=0
@@ -27,7 +28,7 @@ Content-Type: application/json
 ###
 
 # Edita uma pessoa
-PATCH {{baseUrl}}/pessoas/1/
+PATCH {{baseUrl}}/pessoas/12/
 Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
@@ -53,24 +54,25 @@ GET {{baseUrl}}/recados/
 ###
 
 # Retorna apenas um recado com base no ID
-GET {{baseUrl}}/recados/1
+GET {{baseUrl}}/recados/6
 
 ###
 
 # Criar um recado
 POST {{baseUrl}}/recados/
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
     "texto": "Esse é o novo recado",
-    "deId": 5,
-    "paraId": 7
+    "paraId": 12
 }
 
 ###
 
 # Edita um recado
 PATCH {{baseUrl}}/recados/5/
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
@@ -82,6 +84,7 @@ Content-Type: application/json
 
 # Deleta um Recado
 DELETE {{baseUrl}}/recados/1
+Authorization: Bearer {{authToken}}
 
 ###
 # Faz o login
@@ -92,4 +95,12 @@ Content-Type: application/json
 {
     "email": "christian@email.com",
     "password": "123456"
+}
+###
+# Re-autentica
+# @name reAuthenticate
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+{
+    "refreshToken": "{{refreshToken}}"
 }

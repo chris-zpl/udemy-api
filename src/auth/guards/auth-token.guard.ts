@@ -18,6 +18,7 @@ export class AuthTokenGuard implements CanActivate {
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
@@ -27,7 +28,7 @@ export class AuthTokenGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(
+      const payload: object = await this.jwtService.verifyAsync(
         token,
         this.jwtConfiguration,
       );

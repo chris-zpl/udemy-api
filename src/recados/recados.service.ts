@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Recados } from './entities/recados.entity';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
@@ -6,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PessoasService } from 'src/pessoas/pessoas.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { TokenPayloadDto } from 'src/auth/dto/token-payload';
 
 @Injectable()
 export class RecadosService {
@@ -76,15 +81,19 @@ export class RecadosService {
   }
 
   // Para criar
-  async create(createRecadoDto: CreateRecadoDto) {
-    const { deId, paraId } = createRecadoDto;
-    // Encontrar a pessoa que está criando o recado
-    const de = await this.pessoaService.findOne(deId);
-    if (!de) return this.throwNotFoundError();
+  async create(
+    createRecadoDto: CreateRecadoDto,
+    tokenPayload: TokenPayloadDto,
+  ) {
+    const { paraId } = createRecadoDto;
 
     // Encontrar a pessoa para quem o recado está sendo enviado
     const para = await this.pessoaService.findOne(paraId);
     if (!para) return this.throwNotFoundError();
+
+    // Encontrar a pessoa que está criando o recado
+    const de = await this.pessoaService.findOne(tokenPayload.sub);
+    if (!de) return this.throwNotFoundError();
 
     const novoRecado = {
       texto: createRecadoDto.texto,
@@ -100,16 +109,26 @@ export class RecadosService {
       ...recado,
       de: {
         id: recado.de.id,
+        nome: recado.de.nome,
       },
       para: {
         id: recado.para.id,
+        nome: recado.para.nome,
       },
     };
   }
 
   // Para atualizar
-  async update(id: number, updateRecadoDto: UpdateRecadoDto) {
+  async update(
+    id: number,
+    updateRecadoDto: UpdateRecadoDto,
+    tokenPayload: TokenPayloadDto,
+  ) {
     const recado = await this.findOne(id);
+
+    if (recado.de.id !== tokenPayload.sub) {
+      throw new ForbiddenException('Esse recado não é seu.');
+    }
 
     recado.texto = updateRecadoDto?.texto ?? recado.texto;
     recado.lido = updateRecadoDto?.lido ?? recado.lido;
@@ -118,8 +137,12 @@ export class RecadosService {
   }
 
   // Para remover
-  async remove(id: number) {
-    const recado = await this.recadoRepository.findOneBy({ id });
+  async remove(id: number, tokenPayload: TokenPayloadDto) {
+    const recado = await this.findOne(id);
+
+    if (recado.de.id !== tokenPayload.sub) {
+      throw new ForbiddenException('Esse recado não é seu.');
+    }
 
     if (!recado) return this.throwNotFoundError();
 
