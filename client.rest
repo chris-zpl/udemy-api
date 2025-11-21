@@ -1,13 +1,15 @@
 @baseUrl = http://localhost:3000
-
+@authToken = {{authenticate.response.body.accessToken}}
 ###
 # RECADOS
 # Retorna todos os recados cadastrados
 GET {{baseUrl}}/pessoas
-
+?limit=10
+&offset=0
+Authorization: Bearer {{authToken}}
 ###
 
-# Retorna apenas um recado com base no ID
+# Retorna apenas uma pessoa com base no ID
 GET {{baseUrl}}/pessoas/4
 
 ###
@@ -17,15 +19,16 @@ POST {{baseUrl}}/pessoas/
 Content-Type: application/json
 
 {
-    "email": "christian@email.com",
+    "email": "Roberto@email.com",
     "password": "123456",
-    "nome": "Christian"
+    "nome": "Roberto"
 }
 
 ###
 
 # Edita uma pessoa
-PATCH {{baseUrl}}/pessoas/4/
+PATCH {{baseUrl}}/pessoas/1/
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
@@ -36,7 +39,8 @@ Content-Type: application/json
 ###
 
 # Deleta uma pessoa
-DELETE {{baseUrl}}/pessoas/4
+DELETE {{baseUrl}}/pessoas/2
+Authorization: Bearer {{authToken}}
 
 ###
 
@@ -81,10 +85,11 @@ DELETE {{baseUrl}}/recados/1
 
 ###
 # Faz o login
+# @name authenticate
 POST {{baseUrl}}/auth/
 Content-Type: application/json
 
 {
     "email": "christian@email.com",
-    "password": "12345"
+    "password": "123456"
 }
